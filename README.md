@@ -1,12 +1,20 @@
-# The-Miners
-This Repo is the where CSC 1323 Notes will be.
+# Web Backend
+This branch contains the stuff built with Node Package Manager 
 
-Skill?
+This is ran on a local machine with WSL Ubuntu via nvm (Node Version Manager)
 
-Cost?
+Scaffolded the project with Vite, Vanilla JS
 
-Reasonable?
+Basic Structure that will be worked with
+parking-map/
+├── index.html       ← entry point
+├── src/
+│   ├── main.js       ← your JS entry point
+│   └── style.css
+└── package.json
 
-Innovative?
+Rasberry Pi 400 will run receive the camera feed from the Samsung smart phone via IP, and will run the detection algorithm.
 
-Unique?
+Vite frontend will need to fetch that data over HTTP.
+
+I plan to use .pages.dev which is Cloudflare's own free subdomain for Cloudflare Pages
