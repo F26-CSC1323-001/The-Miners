@@ -1,0 +1,12 @@
+# Python
+flask-env/
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Cloudflare Wrangler
+.wrangler/
