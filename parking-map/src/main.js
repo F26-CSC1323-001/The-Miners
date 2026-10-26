@@ -1,60 +1,174 @@
 import './style.css'
-import heroImg from './assets/hero.png'
-import javascriptLogo from './assets/javascript.svg'
-import viteLogo from './assets/vite.svg'
-import { setupCounter } from './counter.js'
 
-document.querySelector('#app').innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${javascriptLogo}" class="framework" alt="JavaScript logo"/>
-    <img src="${viteLogo}" class="vite" alt="Vite logo" />
+const Total_Count = 12;
+
+// Initially all the spaces are free
+let parkingSpaces = Array(Total_Count).fill("free");
+
+document.querySelector("#app").innerHTML = `
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">P</div>
+    <div>
+      <h1>Smart Parking</h1>
+      <p>Parking Management System</p>
+    </div>
   </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
+  <div class="connection">
+    <span class="connection-dot"></span>
+    GUI Demo mode
   </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+</header>
 
-<div class="ticks"></div>
+<main class="dashboard">
+  <section class="welcome">
+    <div>
+      <p class="eyebrow">PARKING OVERVIEW</p>
+      <h2>Find your parking space</h2>
+      <p class="subtitle">
+        Monitor parking availability in real time
+      </p>
+    </div>
+    <div class="total-badge">
+      <span class="total-number" id="total-count">12</span>
+      <span>Total spaces</span>
+    </div>
+  </section>
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src="${viteLogo}" alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-          <img class="button-icon" src="${javascriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+  <section class="stats">
+    <article class="stat-card">
+      <div class="stat-icon total-icon">P</div>
+      <div>
+        <p>Total Spaces</p>
+        <strong id="total-stat">12</strong>
+      </div>
+    </article>
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+    <article class="stat-card">
+      <div class="stat-icon free-icon">✓</div>
+      <div>
+        <p>Available</p>
+        <strong id="free-count">12</strong>
+      </div>
+    </article>
 
-setupCounter(document.querySelector('#counter'))
+    <article class="stat-card">
+      <div class="stat-icon occupied-icon">●</div>
+      <div>
+        <p>Occupied</p>
+        <strong id="occupied-count">0</strong>
+      </div>
+    </article>
+  </section>
+
+  <section class="parking-panel">
+    <div class="panel-heading">
+      <div>
+        <h3>Parking Map</h3>
+        <p>Select a space to see its status</p>
+      </div>
+      <div class="legend">
+        <span><i class="legend-dot free-dot"></i> Available</span>
+        <span><i class="legend-dot occupied-dot"></i> Occupied</span>
+      </div>
+    </div>
+
+    <div class="parking-entrance">
+      <span>ENTRANCE</span>
+      <!-- Need to finish -->
+    </div>
+
+    <div id="parking-map" class="parking-map"></div>
+
+    <div class="selected-space" id="selected-space" aria-live="polite">
+      Select a parking space to view status
+    </div>
+
+    <div class="panel-footer">
+      <span id="availability-message"></span>
+      <button id="simulate-button" type="button">
+        Simulate update
+      </button>
+    </div>
+  </section>
+
+  <p class="page-note">
+    Smart Parking Dashboard - Demo Interface
+  </p>
+</main>
+`;
+
+const parkingMap = document.querySelector("#parking-map");
+const selectedSpace = document.querySelector("#selected-space");
+
+function renderParkingMap() {
+  parkingMap.innerHTML = parkingSpaces.map((status, index) => {
+    const number = String(index + 1).padStart(2, "0");
+    const isFree = status === "free";
+    return `
+      <button
+        type="button"
+        class="parking-space ${isFree ? 'free' : 'occupied'}"
+        data-index="${index}"
+        aria-label="Parking space P${number}: ${isFree ? 'Available' : 'Occupied'}"
+      >
+        <span class="space-number">P${number}</span>
+        <span class="space-symbol">${isFree ? '✓' : '●'}</span>
+        <span class="space-status">${isFree ? 'Available' : 'Occupied'}</span>
+      </button>
+    `;
+  }).join("");
+}
+
+function updateCounters() {
+  const free = parkingSpaces.filter(status => status === "free").length;
+  const occupied = parkingSpaces.filter(status => status === "occupied").length;
+
+  document.querySelector("#total-count").textContent = parkingSpaces.length;
+  document.querySelector("#total-stat").textContent = parkingSpaces.length;
+  document.querySelector("#free-count").textContent = free;
+  document.querySelector("#occupied-count").textContent = occupied;
+
+  document.querySelector("#availability-message").textContent =
+    `${free} of ${parkingSpaces.length} spaces available`;
+}
+
+// Function to update the GUI with data from another part of the project
+function updateParkingGUI(statuses) {
+  if (!Array.isArray(statuses) || statuses.length !== Total_Count) {
+    console.error(`Expected an array of ${Total_Count} parking statuses`);
+    return;
+  }
+  if (!statuses.every(status => status === "free" || status === "occupied")) {
+    console.error('Each status must be "free" or "occupied".');
+    return;
+  }
+  parkingSpaces = [...statuses];
+  renderParkingMap();
+  updateCounters();
+}
+
+parkingMap.addEventListener("click", event => {
+  const space = event.target.closest(".parking-space");
+  if (!space) return;
+
+  const index = Number(space.dataset.index);
+  const status = parkingSpaces[index];
+  const number = String(index + 1).padStart(2, "0");
+
+  selectedSpace.textContent =
+    `Parking space P${number} is ${status === "free" ? "available" : "occupied"}.`;
+});
+
+document.querySelector("#simulate-button").addEventListener("click", () => {
+  // Demo only: simulate a new parking status
+  const nextStatuses = parkingSpaces.map(() => Math.random() < 0.3 ? "occupied" : "free");
+  updateParkingGUI(nextStatuses);
+  selectedSpace.textContent = "Parking information updated successfully (demo).";
+});
+
+// Make the function accessible to other JavaScript modules
+window.updateParkingGUI = updateParkingGUI;
+
+renderParkingMap();
+updateCounters();
