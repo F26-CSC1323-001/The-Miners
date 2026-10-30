@@ -1,4 +1,4 @@
-import './style.css'
+import './style.css' // get the style for the gui
 
 const Total_Count = 12;
 
@@ -98,6 +98,7 @@ document.querySelector("#app").innerHTML = `
 </main>
 `;
 
+// GUI created by Silvia:
 const parkingMap = document.querySelector("#parking-map");
 const selectedSpace = document.querySelector("#selected-space");
 
@@ -166,9 +167,17 @@ document.querySelector("#simulate-button").addEventListener("click", () => {
   updateParkingGUI(nextStatuses);
   selectedSpace.textContent = "Parking information updated successfully (demo).";
 });
+// End of GUI
 
 // Make the function accessible to other JavaScript modules
 window.updateParkingGUI = updateParkingGUI;
 
+
 renderParkingMap();
 updateCounters();
+
+
+// Backend address: comes from .env (VITE_API_URL), falls back to local Flask
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+console.log(API_URL);
+document.getElementById("camera").src = `${API_URL}/api/video`;
